@@ -1,26 +1,23 @@
 import React, { useState } from "react";
 
+var todos = [];
+
 const Problem1 = () => {
     const [show, setShow] = useState("all");
+    const [name, setName] = useState("");
+    const [status, setStatus] = useState("");
 
-    const [todos, setTodos] = useState([
-        { name: "Learn java", status: "pending", priority: 3 },
-        { name: "learn python", status: "completed", priority: 2 },
-        { name: "Make a list", status: "active", priority: 1 },
-        { name: "Do 10 maths", status: "archive", priority: 3 },
-    ]);
-
-    const sortTodos = () =>
-        todos.sort((a, b) => {
+    const sortTodos = (t) =>
+        t.sort((a, b) => {
             return a.priority - b.priority;
         });
 
-    const [filteredTodos, setFilteredTodos] = useState(sortTodos());
+    const [filteredTodos, setFilteredTodos] = useState([]);
 
     const handleClick = (val) => {
         setShow(val);
         if (val === "all") {
-            setFilteredTodos(sortTodos());
+            setFilteredTodos(sortTodos(todos));
         } else {
             setFilteredTodos(todos.filter((todo) => todo.status === val));
         }
@@ -28,6 +25,22 @@ const Problem1 = () => {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
+        var priority = 3;
+
+        if (status === "active") priority = 1;
+        else if (status === "completed") priority = 2;
+
+        const newTodo = {
+            name: name,
+            status: status,
+            priority: priority,
+        };
+        todos.push(newTodo);
+        todos = sortTodos(todos);
+
+        setFilteredTodos(todos);
+        setName("");
+        setStatus("");
     };
 
     return (
@@ -41,18 +54,20 @@ const Problem1 = () => {
                     >
                         <div className="col-auto">
                             <input
-                                onChange={(event) => setNewTodo({ name: event.target.value })}
+                                onChange={(event) => setName(event.target.value)}
                                 type="text"
                                 className="form-control"
                                 placeholder="Name"
+                                value={name}
                             />
                         </div>
                         <div className="col-auto">
                             <input
-                                onChange={(event) => setNewTodo({ status: event.target.value })}
+                                onChange={(event) => setStatus(event.target.value.toLowerCase())}
                                 type="text"
                                 className="form-control"
                                 placeholder="Status"
+                                value={status}
                             />
                         </div>
                         <div className="col-auto">
@@ -101,15 +116,14 @@ const Problem1 = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTodos.length &&
-                                filteredTodos.map((todo, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{todo.name}</td>
-                                            <td>{todo.status}</td>
-                                        </tr>
-                                    );
-                                })}
+                            {filteredTodos.map((todo, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{todo.name}</td>
+                                        <td>{todo.status}</td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
